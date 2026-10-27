@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "pricehawk": {
+      "command": "pricehawk",
+      "env": {
+        "SERPAPI_KEY": "",
+        "BESTBUY_API_KEY": "",
+        "PRICEHAWK_MAX_ORDER": "500"
+      }
+    }
+  }
+}
