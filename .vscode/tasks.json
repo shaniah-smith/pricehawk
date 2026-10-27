@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup: create venv and install",
+      "type": "shell",
+      "command": "python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Demo: walkthrough (press Enter between steps)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/bin/python scripts/demo.py",
+      "presentation": { "reveal": "always", "focus": true, "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Demo: walkthrough (auto)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/bin/python scripts/demo.py --auto",
+      "presentation": { "reveal": "always", "focus": true, "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run tests",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/bin/python -m pytest -v",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "MCP Inspector (click through tools in a browser)",
+      "type": "shell",
+      "command": "npx -y @modelcontextprotocol/inspector ${workspaceFolder}/.venv/bin/pricehawk",
+      "problemMatcher": []
+    }
+  ]
+}

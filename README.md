@@ -1,5 +1,7 @@
 # 🦅 PriceHawk
 
+[![tests](https://github.com/shaniah-smith/pricehawk/actions/workflows/tests.yml/badge.svg)](https://github.com/shaniah-smith/pricehawk/actions/workflows/tests.yml)
+
 **An AI shopping scout for any MCP client.** Ask your AI *"what's the best deal on noise-cancelling headphones under $300, and is anything new coming out?"* and PriceHawk checks multiple stores at once, ranks the deals, spots new releases, tracks prices over time, and can prepare the purchase. Nothing is bought until you say yes.
 
 Works with Claude Desktop, Claude Code, and any other client that speaks the [Model Context Protocol](https://modelcontextprotocol.io).
@@ -35,6 +37,14 @@ cd pricehawk
 pip install -e .
 pricehawk          # starts the MCP server over stdio
 ```
+
+### See the whole thing in 3 minutes
+
+```bash
+python scripts/demo.py
+```
+
+This runs a guided walkthrough of every feature over the real MCP protocol: compare, fake-sale check, new releases, top brands, price alert, and a confirmed demo purchase. See [DEMO.md](DEMO.md) for a presentation guide.
 
 ### Connect it to Claude Desktop
 
@@ -114,8 +124,19 @@ src/pricehawk/
     serpapi.py       Google Shopping
     bestbuy.py       Best Buy Products API
     shopify.py       Shopify Catalog + Checkout (UCP over MCP)
+scripts/demo.py      guided terminal demo
 tests/               end-to-end tests over the MCP protocol
+.vscode/             interpreter, test, task and debug setup for VS Code
 ```
+
+## Working in VS Code
+
+Open the folder (`code .`), accept the recommended extensions, then use **Cmd+Shift+P → Tasks: Run Task**:
+
+- **Setup: create venv and install**
+- **Demo: walkthrough**
+- **Run tests**
+- **MCP Inspector**: click through every tool in a browser (needs Node.js)
 
 ## Development
 
