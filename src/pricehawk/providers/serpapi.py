@@ -54,5 +54,5 @@ class SerpApiProvider(Provider):
 
     async def new_releases(self, category: str, brand: str | None, days: int, limit: int = 20) -> list[Offer]:
         # Google Shopping has no release-date filter; a "new" query is the best approximation.
-        # Best Buy (below) gives exact release dates when its key is set.
+        # Walmart can sort by newest listings; see serpapi_walmart.py.
         return await self._query(f"new {brand or ''} {category}".replace("  ", " "), limit)

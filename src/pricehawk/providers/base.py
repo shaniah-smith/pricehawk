@@ -34,3 +34,8 @@ class Provider(ABC):
     def env(key: str) -> str | None:
         v = os.environ.get(key, "").strip()
         return v or None
+
+    @staticmethod
+    def switch(key: str) -> bool:
+        """On/off setting that defaults to on; 0, false or no turns it off."""
+        return os.environ.get(key, "").strip().lower() not in ("0", "false", "no")

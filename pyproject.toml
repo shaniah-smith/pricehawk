@@ -1,7 +1,7 @@
 [project]
 name = "pricehawk"
 version = "0.1.0"
-description = "An AI shopping scout over MCP: compare prices, spot new releases, track deals and buy with confirmation."
+description = "An AI shopping scout over MCP: compare Google Shopping, Walmart and eBay, spot fake sales and new releases, and track prices."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

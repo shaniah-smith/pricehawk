@@ -7,6 +7,7 @@ so what you show is the real thing, not a mock.
     python scripts/demo.py                 # press Enter between steps (good for presenting)
     python scripts/demo.py --auto          # run straight through
     python scripts/demo.py --query "gaming monitor" --budget 400
+    python scripts/demo.py --real          # live Google Shopping, Walmart and eBay (needs SERPAPI_KEY)
 """
 
 from __future__ import annotations
@@ -108,9 +109,10 @@ async def run(args: argparse.Namespace) -> None:
     if args.real:
         env.pop("PRICEHAWK_DEMO", None)
     else:
-        for key in ("SERPAPI_KEY", "BESTBUY_API_KEY", "SHOPIFY_CLIENT_ID"):
+        for key in ("SERPAPI_KEY",):
             env.pop(key, None)
         env["PRICEHAWK_DEMO"] = "1"
+        env["PRICEHAWK_DOTENV"] = "0"  # keep keys from .env out of demo mode
 
     print(c(BANNER, GOLD + ";" + BOLD))
     print(c("   An AI shopping scout, plugged into any AI assistant through MCP.", BOLD))
@@ -168,36 +170,18 @@ async def run(args: argparse.Namespace) -> None:
         body(c("Run check_watchlist on a daily schedule to get pinged when it hits.", DIM))
         p.pause()
 
-        # 6. Buy with confirmation
-        p.title("Buy it, safely", "Buy the best deal")
-        prep = await call(client, p, "prepare_purchase", product_id=best["product_id"])
-        if "error" in prep:
-            body(c(prep["error"], RED))
-        else:
-            body(c(f"🛒 {prep['summary']}", BOLD))
-            body(c("Status: awaiting your confirmation. Nothing has been bought yet.", DIM))
-            print()
-            body(c('AI: "Want me to place this order?"', CYAN))
-            if p.auto:
-                answer = "yes"
-            else:
-                answer = input(c("   You (yes/no): ", CYAN)).strip().lower() or "yes"
-            print()
-            if answer.startswith("y"):
-                done = await call(client, p, "confirm_purchase", purchase_id=prep["purchase_id"], user_confirmed=True)
-                body(c(f"✓ {done.get('message', done.get('status'))}", GREEN))
-                if done.get("order_number"):
-                    body(f"Order number: {done['order_number']}")
-            else:
-                await call(client, p, "cancel_purchase", purchase_id=prep["purchase_id"])
-                body(c("✓ Canceled. No order placed.", GREEN))
+        # 6. Where to buy
+        p.title("Where should I buy it?", "Which store has the best deal, and where do I buy?")
+        for row in out.get("best_by_store", []):
+            body(f"{c(row['store'], BOLD)}: ${row['price']:,.2f} (score {row['deal_score']:.0f}) {row['title'][:50]}")
+            body(c(f"  {row['url'][:90]}", DIM))
         print()
-        body(c("Guardrails: spending cap, allowed-store list, purchase log, and no card details", DIM))
-        body(c("ever touch PriceHawk. Payment happens on the store's own checkout page.", DIM))
+        body(c(f"✓ Best overall: {best['store']} for ${best['price']:,.2f}. Tap the link to buy on the store's own site.", GREEN))
+        body(c("PriceHawk never buys for you or sees card details. Checkout always happens on the store's page.", DIM))
 
     print()
     print(c("━" * 72, GOLD))
-    print(c("   That's PriceHawk: compare → verify → discover → watch → buy.", BOLD))
+    print(c("   That's PriceHawk: compare → verify → discover → watch → buy smart.", BOLD))
     print(c("   github.com/shaniah-smith/pricehawk", CYAN))
     print()
 

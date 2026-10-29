@@ -72,8 +72,6 @@ def score(offers: list[Offer], today: date | None = None) -> list[Offer]:
             o.badges.append(f"🏷️ -{round(o.discount * 100)}%")
         if o.release_date and o.release_date >= today - timedelta(days=NEW_RELEASE_DAYS):
             o.badges.append("🆕 New")
-        if o.buyable:
-            o.badges.append("🛒 Buy in chat")
     return offers
 
 

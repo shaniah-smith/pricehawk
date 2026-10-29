@@ -10,12 +10,9 @@ from pricehawk import server
 
 @pytest.fixture(autouse=True)
 def demo_env(monkeypatch, tmp_path):
-    for key in ("SERPAPI_KEY", "BESTBUY_API_KEY", "SHOPIFY_CLIENT_ID"):
-        monkeypatch.delenv(key, raising=False)
+    monkeypatch.delenv("SERPAPI_KEY", raising=False)
     monkeypatch.setenv("PRICEHAWK_DB", str(tmp_path / "test.db"))
-    monkeypatch.setenv("PRICEHAWK_MAX_ORDER", "100000")
     server._store = None
-    server._offer_cache.clear()
     yield
     server._store = None
 
@@ -32,7 +29,7 @@ async def call(client, tool, **args):
 async def test_lists_tools():
     async with Client(server.mcp) as c:
         names = {t.name for t in (await c.list_tools()).tools}
-    assert {"compare_prices", "new_releases", "top_brands", "prepare_purchase", "confirm_purchase"} <= names
+    assert {"compare_prices", "new_releases", "top_brands", "price_history", "watch_price", "check_watchlist"} <= names
 
 
 async def test_compare_prices_ranks_and_badges():
@@ -72,25 +69,12 @@ async def test_watchlist_flow():
     assert removed["removed"] is True
 
 
-async def test_purchase_requires_confirmation():
+async def test_best_by_store_and_buy_links():
     async with Client(server.mcp) as c:
         out = await call(c, "compare_prices", query="mechanical keyboard")
-        pid = out["results"][0]["product_id"]
-        prep = await call(c, "prepare_purchase", product_id=pid)
-        assert prep["status"] == "awaiting_confirmation"
-        refused = await call(c, "confirm_purchase", purchase_id=prep["purchase_id"], user_confirmed=False)
-        assert "error" in refused
-        done = await call(c, "confirm_purchase", purchase_id=prep["purchase_id"], user_confirmed=True)
-        assert done["status"] == "demo_completed"
-        again = await call(c, "confirm_purchase", purchase_id=prep["purchase_id"], user_confirmed=True)
-        assert "error" in again
-        log = await call(c, "purchase_log")
-    assert log["purchases"][0]["status"] == "demo_completed"
-
-
-async def test_spending_cap(monkeypatch):
-    monkeypatch.setenv("PRICEHAWK_MAX_ORDER", "1")
-    async with Client(server.mcp) as c:
-        out = await call(c, "compare_prices", query="standing desk")
-        prep = await call(c, "prepare_purchase", product_id=out["results"][0]["product_id"])
-    assert "limit" in prep["error"]
+        names = {t.name for t in (await c.list_tools()).tools}
+    stores = [r["store"] for r in out["best_by_store"]]
+    assert stores and len(stores) == len(set(stores))
+    assert out["best_by_store"][0]["store"] == out["results"][0]["store"]
+    assert all(r["url"].startswith("https://") for r in out["results"])
+    assert not names & {"prepare_purchase", "confirm_purchase"}

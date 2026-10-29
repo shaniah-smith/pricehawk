@@ -55,7 +55,6 @@ class DemoProvider(Provider):
                         rating=rating,
                         reviews=reviews,
                         release_date=released,
-                        product_id="demo:" + hashlib.sha1(f"{model}|{store}".encode()).hexdigest()[:10],
                     )
                 )
         return products[:n]
