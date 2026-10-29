@@ -1,11 +1,10 @@
-"""Local SQLite storage: price log, watchlist and purchase log.
+"""Local SQLite storage: price log and watchlist.
 
 Lives at ~/.pricehawk/pricehawk.db (override with PRICEHAWK_DB).
 """
 
 from __future__ import annotations
 
-import json
 import os
 import sqlite3
 import statistics
@@ -24,9 +23,6 @@ CREATE INDEX IF NOT EXISTS prices_query ON prices(query, ts);
 CREATE TABLE IF NOT EXISTS watchlist (
     id INTEGER PRIMARY KEY AUTOINCREMENT, query TEXT NOT NULL, target REAL NOT NULL,
     created REAL NOT NULL, last_best REAL, last_checked REAL
-);
-CREATE TABLE IF NOT EXISTS purchases (
-    id TEXT PRIMARY KEY, created REAL NOT NULL, status TEXT NOT NULL, data TEXT NOT NULL
 );
 """
 
@@ -98,29 +94,3 @@ class Store:
         cur = self.db.execute("DELETE FROM watchlist WHERE id=?", (watch_id,))
         self.db.commit()
         return cur.rowcount > 0
-
-    # ---- purchases -----------------------------------------------------------
-
-    def save_purchase(self, pid: str, status: str, data: dict[str, Any]) -> None:
-        self.db.execute(
-            "INSERT OR REPLACE INTO purchases VALUES (?,?,?,?)",
-            (pid, data.get("created", time.time()), status, json.dumps(data)),
-        )
-        self.db.commit()
-
-    def purchase(self, pid: str) -> dict[str, Any] | None:
-        row = self.db.execute("SELECT * FROM purchases WHERE id=?", (pid,)).fetchone()
-        if not row:
-            return None
-        d = json.loads(row["data"])
-        d["status"] = row["status"]
-        return d
-
-    def purchases(self, limit: int = 20) -> list[dict[str, Any]]:
-        rows = self.db.execute("SELECT * FROM purchases ORDER BY created DESC LIMIT ?", (limit,))
-        out = []
-        for r in rows:
-            d = json.loads(r["data"])
-            d["status"] = r["status"]
-            out.append(d)
-        return out

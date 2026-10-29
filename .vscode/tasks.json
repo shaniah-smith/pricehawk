@@ -5,34 +5,107 @@
       "label": "Setup: create venv and install",
       "type": "shell",
       "command": "python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "windows": {
+        "command": "python -m venv .venv; .venv\\Scripts\\python -m pip install -e '.[dev]'",
+        "options": {
+          "env": {
+            "PYTHONIOENCODING": "utf-8"
+          }
+        }
+      }
     },
     {
       "label": "Demo: walkthrough (press Enter between steps)",
       "type": "shell",
       "command": "${workspaceFolder}/.venv/bin/python scripts/demo.py",
-      "presentation": { "reveal": "always", "focus": true, "panel": "dedicated", "clear": true },
-      "problemMatcher": []
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": [],
+      "windows": {
+        "command": ".venv\\Scripts\\python scripts\\demo.py",
+        "options": {
+          "env": {
+            "PYTHONIOENCODING": "utf-8"
+          }
+        }
+      }
     },
     {
       "label": "Demo: walkthrough (auto)",
       "type": "shell",
       "command": "${workspaceFolder}/.venv/bin/python scripts/demo.py --auto",
-      "presentation": { "reveal": "always", "focus": true, "panel": "dedicated", "clear": true },
-      "problemMatcher": []
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": [],
+      "windows": {
+        "command": ".venv\\Scripts\\python scripts\\demo.py --auto",
+        "options": {
+          "env": {
+            "PYTHONIOENCODING": "utf-8"
+          }
+        }
+      }
+    },
+    {
+      "label": "Demo: walkthrough with live stores (needs SERPAPI_KEY)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/bin/python scripts/demo.py --real",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": [],
+      "windows": {
+        "command": ".venv\\Scripts\\python scripts\\demo.py --real",
+        "options": {
+          "env": {
+            "PYTHONIOENCODING": "utf-8"
+          }
+        }
+      }
     },
     {
       "label": "Run tests",
       "type": "shell",
       "command": "${workspaceFolder}/.venv/bin/python -m pytest -v",
-      "group": { "kind": "test", "isDefault": true },
-      "problemMatcher": []
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "windows": {
+        "command": ".venv\\Scripts\\python -m pytest -v",
+        "options": {
+          "env": {
+            "PYTHONIOENCODING": "utf-8"
+          }
+        }
+      }
     },
     {
       "label": "MCP Inspector (click through tools in a browser)",
       "type": "shell",
       "command": "npx -y @modelcontextprotocol/inspector ${workspaceFolder}/.venv/bin/pricehawk",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "windows": {
+        "command": "npx -y @modelcontextprotocol/inspector .venv\\Scripts\\pricehawk.exe",
+        "options": {
+          "env": {
+            "PYTHONIOENCODING": "utf-8"
+          }
+        }
+      }
     }
   ]
 }
